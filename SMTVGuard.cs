@@ -21,7 +21,7 @@ public class SMTVGuard : MelonMod
             // If it's not resisted/blocked/drained/repelled
             if (isGuarding && !(__result < 100 || (__result >= 65536 && __result < 2147483648)))
             {
-                __result = 1;
+                __result = 80;
             }
         }
     }
@@ -44,6 +44,8 @@ public class SMTVGuard : MelonMod
     {
         public static void Prefix(ref nbCommSelProcessData_t s)
         {
+            s.act.party.count[11] = 0; // Stop guarding
+
             var skillIndices = new List<ushort> { };
             var skills = s.commlist[0].ToList().Where(x => x != 0);
 
@@ -93,13 +95,22 @@ public class SMTVGuard : MelonMod
         }
     }
 
-    // Before a new action is executed during battle
-    [HarmonyPatch(typeof(nbMainProcess), nameof(nbMainProcess.nbSetActionMaePhase))]
+    // After initiating a phase
+    [HarmonyPatch(typeof(nbMainProcess), nameof(nbMainProcess.nbSetPressMaePhase))]
     private class Patch6
     {
-        public static void Prefix(ref nbMainProcessData_t data)
+        public static void Postfix(ref nbMainProcessData_t data)
         {
-            nbMainProcess.nbGetPartyFromFormindex(data.activeunit).count[11] = 0; // Stop guarding
+            short activeunit = nbMainProcess.nbGetMainProcessData().activeunit; // Get the formindex of the first active demon
+
+            // If that demon is an ally
+            if (activeunit < 4)
+            {
+                for (int i = 0; i < data.party.Length; i++)
+                {
+                    data.party[i].count[11] = 0;
+                }
+            }
         }
     }
 
