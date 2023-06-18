@@ -16,7 +16,7 @@ public class SMTVGuard : MelonMod
     {
         public static void Postfix(ref uint __result, ref int formindex)
         {
-            bool isGuarding = nbMainProcess.nbGetPartyFromFormindex(formindex).count[11] == 1;
+            bool isGuarding = nbMainProcess.nbGetPartyFromFormindex(formindex).count[19] == 1;
 
             // If it's not resisted/blocked/drained/repelled
             if (isGuarding && !(__result < 100 || (__result >= 65536 && __result < 2147483648)))
@@ -32,7 +32,7 @@ public class SMTVGuard : MelonMod
     {
         public static void Postfix(ref int __result, ref int dformindex)
         {
-            bool isGuarding = nbMainProcess.nbGetPartyFromFormindex(dformindex).count[11] == 1;
+            bool isGuarding = nbMainProcess.nbGetPartyFromFormindex(dformindex).count[19] == 1;
 
             if (isGuarding) __result = 0;
         }
@@ -44,7 +44,7 @@ public class SMTVGuard : MelonMod
     {
         public static void Prefix(ref nbCommSelProcessData_t s)
         {
-            s.act.party.count[11] = 0; // Stop guarding
+            s.act.party.count[19] = 0; // Stop guarding
 
             var skillIndices = new List<ushort> { };
             var skills = s.commlist[0].ToList().Where(x => x != 0);
@@ -108,7 +108,7 @@ public class SMTVGuard : MelonMod
             {
                 for (int i = 0; i < data.party.Length; i++)
                 {
-                    data.party[i].count[11] = 0;
+                    data.party[i].count[19] = 0;
                 }
             }
         }
